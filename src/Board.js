@@ -56,18 +56,19 @@ export default class Board extends React.Component {
     );
   }
 
+
   render() {
     return (
       <div className="Board">
         <div className="container-fluid">
           <div className="row">
-            <div className="col-md-4">
+            <div className="col-md-4" id='backlog'>
               {this.renderSwimlane('Backlog', this.state.clients.backlog, this.swimlanes.backlog)}
             </div>
-            <div className="col-md-4">
+            <div className="col-md-4" id='inprogress'>
               {this.renderSwimlane('In Progress', this.state.clients.inProgress, this.swimlanes.inProgress)}
             </div>
-            <div className="col-md-4">
+            <div className="col-md-4" id='complete'>
               {this.renderSwimlane('Complete', this.state.clients.complete, this.swimlanes.complete)}
             </div>
           </div>
@@ -75,4 +76,29 @@ export default class Board extends React.Component {
       </div>
     );
   }
+
+  componentDidMount() {
+    this.getClients();
+    const container = Array.from(document.getElementsByClassName("Swimlane-dragColumn"));
+    const colors = {
+      "Backlog": "Card-grey",
+      "In Progress":"Card-blue",
+      "Complete":"Card-green",
+    }
+
+    const stas={
+      "Card Card-blue": "in-progress",
+      "Card Card-grey": "backlog",
+      "Card Card-green": "complete",
+    }
+    
+    const dragSet = Dragula(container);
+    dragSet.on("drop", (el, target, source, sibling) => {
+      const className = [target.children[1].className];
+      const status = stas[target.children[1].className];
+      el.className = className;
+      el.status=status;
+    })
+  }
+
 }
